@@ -314,7 +314,7 @@ jobs:
   # has to download its build artifacts.
   emu-cleanup:
     name: "Clean up intermediate build artifacts"
-    needs: ["emu-win-prep-vs2026", "emu-win-prep-vs22", "emu-win-arm-prep", "emu-linux-prep", "emu-linux-arm-prep"]
+    needs: ["emu-win-prep-vs2026", "emu-win-prep-vs22", "emu-linux-prep"]
     if: ${{ !cancelled() }}
     runs-on: "ubuntu-latest"
     steps:
@@ -326,7 +326,7 @@ jobs:
         run: |
           repo="${{ github.repository }}"
           gh api "repos/${repo}/actions/runs/${{ github.run_id }}/artifacts" --paginate \
-            --jq '.artifacts[] | select(.name | test("^(emu-win-|emu-winarm-|emu-linux-|emu-linuxarm-|proto-gen-)")) | .id' | \
+            --jq '.artifacts[] | select(.name | test("^(emu-win-|emu-linux-|proto-gen-)")) | .id' | \
           while IFS= read -r artifact_id; do
             gh api -X DELETE "repos/${repo}/actions/artifacts/${artifact_id}" \
               && echo "Deleted artifact ${artifact_id}" \
